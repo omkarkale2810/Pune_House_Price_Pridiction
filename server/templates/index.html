@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bangalore Home Price Prediction</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #f0f4f8;
+            --card-background: #ffffff;
+            --text-color: #2c3e50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f2f1, #b2dfdb);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            background: var(--card-background);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .area {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .area:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .switch-field {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .switch-field input {
+            display: none;
+        }
+
+        .switch-field label {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .switch-field input:checked + label {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .location {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 8px 10px;
+        }
+
+        .submit {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .submit:hover {
+            background-color: #27ae60;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .submit:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .result {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(46, 204, 113, 0.1);
+            border-radius: 8px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if error %}
+        <div class="error">
+            <h3><i class="fas fa-exclamation-triangle"></i> {{ error }}</h3>
+        </div>
+        {% endif %}
+        
+        <form method="post" action="/predict_home_price">
+            <div class="form-group">
+                <h2>Area (Square Feet)</h2>
+                <input class="area" type="text" id="uiSqft" name="total_sqft" 
+                       value="{{ default_sqft or 1000 }}">
+            </div>
+            
+            <div class="form-group">
+                <h2>BHK</h2>
+                <div class="switch-field">
+                    {% for bhk in range(1, 6) %}
+                    <input type="radio" id="radio-bhk-{{ bhk }}" name="bhk" 
+                           value="{{ bhk }}" 
+                           {% if bhk == default_bhk %}checked{% endif %}>
+                    <label for="radio-bhk-{{ bhk }}">{{ bhk }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <h2>Bath</h2>
+                <div class="switch-field">
+                    {% for bath in range(1, 6) %}
+                    <input type="radio" id="radio-bath-{{ bath }}" name="bath" 
+                           value="{{ bath }}" 
+                           {% if bath == default_bath %}checked{% endif %}>
+                    <label for="radio-bath-{{ bath }}">{{ bath }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <h2>Location</h2>
+                <select class="location" name="location" id="uiLocations">
+                    <option value="" disabled {% if not location %}selected{% endif %}>
+                        Choose a Location
+                    </option>
+                    {% for loc in locations %}
+                    <option value="{{ loc }}" 
+                            {% if loc == location %}selected{% endif %}>
+                        {{ loc }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <button class="submit" type="submit">Estimate Price</button>
+        </form>
+        
+        {% if estimated_price %}
+        <div class="result">
+            <h2>Estimated Price: {{ estimated_price }} Lakh</h2>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -180,10 +180,30 @@
                 padding: 20px;
             }
         }
+
+        .punekar-section {
+            background-color: rgba(46, 204, 113, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .developer-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .developer-link:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <h1 style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">Pune House Price Prediction</h1>
         {% if error %}
         <div class="error">
             <h3><i class="fas fa-exclamation-triangle"></i> {{ error }}</h3>
@@ -244,6 +264,12 @@
             <h2>Estimated Price: {{ estimated_price }} Lakh</h2>
         </div>
         {% endif %}
+
+         <div class="punekar-section">
+            <h3>Made by Punekar, for Punekar</h3>
+            <p>A local solution to understand Pune's dynamic real estate market</p>
+            <p>Developed by <a href="https://github.com/omkarkale2810" class="developer-link" target="_blank">Omkar Kale</a></p>
+        </div>
     </div>
 </body>
 </html>
